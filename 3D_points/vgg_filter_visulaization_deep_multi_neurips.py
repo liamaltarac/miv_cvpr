@@ -10,8 +10,7 @@ from turtle import color
 import numpy as np
 from scipy import ndimage
 
-from  moviepy import editor as mpy
-
+l,
 from skimage.filters import sobel_h
 from skimage.filters import sobel_v
 

@@ -1,5 +1,5 @@
 import sys
-sys.path.append('./')
+sys.path.append('../')
 from utils.utils import *
 
 import numpy as np
@@ -54,7 +54,7 @@ y =( a_mag[:,F]*np.sin((theta[:,F]))).numpy()*7
 z =(s_mag[:,F]*np.sign(np.mean(s, axis=(0,1)))[:,F]).numpy()*7
 
 
-fig =  mlab.figure(size=(600, 600), bgcolor=(0.8980392156862745, 0.8980392156862745, 0.8980392156862745), fgcolor=(0, 0, 0))
+fig =  mlab.figure(size=(600, 643), bgcolor=(0.8980392156862745, 0.8980392156862745, 0.8980392156862745), fgcolor=(0, 0, 0))
 mlab.clf()
 
 mlab.points3d(x, y, z, np.ones(z.shape), color=(0.8862745098039215,0.2901960784313726,0.2), scale_factor=0.05)
