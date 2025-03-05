@@ -19,7 +19,7 @@ def get_filter(model, layer):
 	conv_layers = []
 	for l in model.layers:
 		if 'conv2d' in str(type(l)).lower():
-			if l.kernel_size == (3,3) or l.kernel_size == (7,7):
+			if l.kernel_size == (3,3):
 				conv_layers.append(l)
 
 	layer = conv_layers[layer]
