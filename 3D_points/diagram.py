@@ -34,11 +34,11 @@ from mayavi  import mlab
 plt.style.use(['science', 'ieee'])
 plt.rcParams.update({'figure.dpi': '300'})
 
-model = ResNet50(weights='imagenet',
+model = VGG16(weights=None,
                   include_top=False,
                   input_shape=(224, 224, 3))
 
-filters = get_filter(model, -1)
+filters = get_filter(model, 7)
 filters = filters #/ np.sqrt(reduce_variance(filters, axis=None))
 theta = getSobelTF(filters)
 print(filters.shape)
@@ -48,16 +48,16 @@ s_mag = reduce_euclidean_norm(s, axis=[0,1])
 
 mag = reduce_euclidean_norm(filters, axis=[0,1])
 
-F = 251
-x =(a_mag[:,F]*np.cos((theta[:,F]))).numpy()*7
-y =( a_mag[:,F]*np.sin((theta[:,F]))).numpy()*7
-z =(s_mag[:,F]*np.sign(np.mean(s, axis=(0,1)))[:,F]).numpy()*7
+F = 29  #251
+x =(a_mag[:,F]*np.cos((theta[:,F]))).numpy()*3
+y =( a_mag[:,F]*np.sin((theta[:,F]))).numpy()*3
+z =(s_mag[:,F]*np.sign(np.mean(s, axis=(0,1)))[:,F]).numpy()*3
 
 
 fig =  mlab.figure(size=(600, 643), bgcolor=(0.8980392156862745, 0.8980392156862745, 0.8980392156862745), fgcolor=(0, 0, 0))
 mlab.clf()
 
-mlab.points3d(x, y, z, np.ones(z.shape), color=(0.8862745098039215,0.2901960784313726,0.2), scale_factor=0.05)
+mlab.points3d(x, y, z, np.ones(z.shape), color=(0.8862745098039215,0.2901960784313726,0.2), scale_factor=0.01)
 mlab.plot3d(np.linspace(-1, 1, 100, endpoint=True), np.zeros(100), np.zeros(100), np.ones(100), color=(0,0,0), tube_radius=0.01)
 mlab.plot3d( np.zeros(100), np.linspace(-1, 1, 100, endpoint=True),np.zeros(100), np.ones(100), color=(0,0,0), tube_radius=0.01)
 mlab.plot3d(np.zeros(100), np.zeros(100),np.linspace(-1, 1, 100, endpoint=True),  np.ones(100), color=(0,0,0), tube_radius=0.01)

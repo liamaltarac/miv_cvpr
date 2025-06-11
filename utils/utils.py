@@ -14,12 +14,12 @@ from tensorflow.image import flip_up_down, flip_left_right, rot90
 from cv2 import getDerivKernels
 
 
-def get_filter(model, layer):
+def get_filter(model, layer , sev=False):
 
 	conv_layers = []
 	for l in model.layers:
 		if 'conv2d' in str(type(l)).lower():
-			if l.kernel_size == (3,3):
+			if l.kernel_size == (3,3) or (l.kernel_size == (7,7) and sev):
 				conv_layers.append(l)
 
 	layer = conv_layers[layer]
@@ -67,6 +67,8 @@ def get_filter(model, layer):
 def getDominantAngle(filters):
 	domTheta = []
 	vec = []
+	old_vec = []
+
 	_, a = getSymAntiSymTF(filters)
 	a_mag = reduce_euclidean_norm(a, axis=[0,1])
 	theta = getSobelTF(filters)
@@ -76,10 +78,12 @@ def getDominantAngle(filters):
 		x =a_mag[:, i]*np.cos((theta[:, i]))
 		y = a_mag[:, i]*np.sin((theta[:, i]))
 
-
-
-		cov = np.cov([x,y])
+		u_x = np.mean(x)
+		#print(u_x)
+		u_y = np.mean(y)
+		cov = np.cov([x, y])
 		e_val, e_vec = np.linalg.eigh(cov)
+		print(e_val, e_vec)
 		e_vec = e_vec[:, np.argmax(e_val)]
 		e_val = np.max(e_val)
 
@@ -96,15 +100,16 @@ def getDominantAngle(filters):
 		#print(np.arctan2(e_vec[1], e_vec[0]))
 		domTheta.append(np.arctan2(new_vec[1], new_vec[0]))
 		vec.append(new_vec)
+		#old_vec.append(e_vec)
 
-	return np.array(vec), np.array(domTheta)
+	return np.array(vec), np.array(domTheta)#, old_vec
 
 
 def getSobelTF(f):
 
 	ksize = f.shape[0]
 	sobel = getDerivKernels(1,0,ksize=ksize, normalize=True)
-	sobel_v = -np.expand_dims(np.expand_dims(np.outer(sobel[0], sobel[1]), -1),-1)
+	sobel_v = -np.expand_dims(np.expand_dims(np.outer(sobel[0], sobel[1]), -1),-1)  # * -1
 	sobel = getDerivKernels(0,1,ksize=ksize, normalize=True)
 	sobel_h = np.expand_dims(np.expand_dims(np.outer(sobel[0], sobel[1]), -1),-1)
 
@@ -170,9 +175,11 @@ def getSymAntiSymTF(filter):
 	return  sym, anti
 
 
-def topKfilters(model, layer_num, k=10):
+
+
+def topKfilters(model, layer_num, k=10, sev=False):
 	#print(i, l.name)
-	filters = get_filter(model, layer_num)
+	filters = get_filter(model, layer_num, sev)
 
 	mag = reduce_euclidean_norm(filters, axis=[0,1])**2
 	avg_mag = reduce_mean(mag, axis=0)
@@ -181,9 +188,9 @@ def topKfilters(model, layer_num, k=10):
 	idx = [x for _, x in sorted(zip( avg_mag, idx), reverse=True)]
 	return idx[:int(np.floor(len(idx)*k/100))]
 
-def topKchannels(model, layer_num, f_num, k=10):
+def topKchannels(model, layer_num, f_num, k=10, sev=False):
 	#print(i, l.name)
-	filters = get_filter(model, layer_num)[:,:,:,f_num]
+	filters = get_filter(model, layer_num, sev)[:,:,:,f_num]
 
 	mag = reduce_euclidean_norm(filters, axis=[0,1])**2
 	#avg_mag = reduce_mean(mag, axis=0)

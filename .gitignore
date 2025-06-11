@@ -1,0 +1,7 @@
+*.png
+*.pdf
+*.h5
+*.pyc
+*.zip
+*.gif
+DCT_weights/2comp_1epoch/*
