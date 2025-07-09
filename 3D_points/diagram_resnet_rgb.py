@@ -58,15 +58,15 @@ fig =  mlab.figure(size=(600, 643), bgcolor=(0.8980392156862745, 0.8980392156862
 mlab.clf()
 
 for F in range(filters.shape[-1]):
-    x =(a_mag[:,F]*np.cos((theta[:,F]))).numpy()*7
-    y =( a_mag[:,F]*np.sin((theta[:,F]))).numpy()*7
-    z =(s_mag[:,F]*np.sign(np.mean(s, axis=(0,1)))[:,F]).numpy()*7
+    x =(a_mag[:,F]*np.cos((theta[:,F]))).numpy()*30
+    y =( a_mag[:,F]*np.sin((theta[:,F]))).numpy()*30
+    z =(s_mag[:,F]*np.sign(np.mean(s, axis=(0,1)))[:,F]).numpy()*30
 
 
 
-    mlab.points3d(x[0], y[0], z[0], np.ones(z[0].shape), color=(1.,0.,0.), scale_factor=0.1)
-    mlab.points3d(x[1], y[1], z[1], np.ones(z[0].shape), color=(0.,1.,0.), scale_factor=0.1)
-    mlab.points3d(x[2], y[2], z[2], np.ones(z[0].shape), color=(0.,0.,1.), scale_factor=0.1)
+    mlab.points3d(x[0], y[0], z[0], np.ones(z[0].shape), color=(1.,0.,0.), scale_factor=0.5)
+    mlab.points3d(x[1], y[1], z[1], np.ones(z[0].shape), color=(0.,1.,0.), scale_factor=0.5)
+    mlab.points3d(x[2], y[2], z[2], np.ones(z[0].shape), color=(0.,0.,1.), scale_factor=0.5)
 
 mlab.plot3d(np.linspace(-10, 10, 100, endpoint=True), np.zeros(100), np.zeros(100), np.ones(100), color=(0,0,0), tube_radius=0.05)
 mlab.plot3d( np.zeros(100), np.linspace(-10, 10, 100, endpoint=True),np.zeros(100), np.ones(100), color=(0,0,0), tube_radius=0.05)
