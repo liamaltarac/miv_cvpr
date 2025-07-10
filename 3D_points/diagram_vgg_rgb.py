@@ -34,7 +34,7 @@ from mayavi  import mlab
 plt.style.use(['science', 'ieee'])
 plt.rcParams.update({'figure.dpi': '300'})
 
-model = VGG16(weights=None,
+model = VGG16(weights='imagenet',
                   include_top=False,
                   input_shape=(224, 224, 3))
 
@@ -52,9 +52,9 @@ fig =  mlab.figure(size=(600, 643), bgcolor=(0.8980392156862745, 0.8980392156862
 mlab.clf()
 
 for F in range(filters.shape[-1]):
-    x =(a_mag[:,F]*np.cos((theta[:,F]))).numpy()*7
-    y =( a_mag[:,F]*np.sin((theta[:,F]))).numpy()*7
-    z =(s_mag[:,F]*np.sign(np.mean(s, axis=(0,1)))[:,F]).numpy()*7
+    x =(a_mag[:,F]*np.cos((theta[:,F]))).numpy()*9
+    y =( a_mag[:,F]*np.sin((theta[:,F]))).numpy()*9
+    z =(s_mag[:,F]*np.sign(np.mean(s, axis=(0,1)))[:,F]).numpy()*9
 
 
 
