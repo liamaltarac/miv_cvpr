@@ -14,6 +14,13 @@ from tensorflow.image import flip_up_down, flip_left_right, rot90
 from cv2 import getDerivKernels
 
 
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from PIL import Image
+from io import BytesIO
+
+
 def get_filter(model, layer , sev=False):
 
 	conv_layers = []
@@ -160,7 +167,7 @@ def getSymAntiSymTF(filter):
 
 	mat_flip_y = flip_up_down(f_reshaped)
 	mat_flip_xy = flip_left_right(flip_up_down(f_reshaped))
-	print(mat_flip_x.shape, mat_flip_y.shape, mat_flip_xy.shape)
+	#print(mat_flip_x.shape, mat_flip_y.shape, mat_flip_xy.shape)
 	sum = f_reshaped + mat_flip_x + mat_flip_y + mat_flip_xy
 	
 	mat_sum_rot_90 = rot90(sum)
@@ -209,3 +216,68 @@ def dct2(a):
 def idct2(a):
 	return idct(idct(a.T, norm='ortho').T, norm='ortho')    
 
+
+
+
+def plot_filter_x(beta2):
+
+	plt.rcParams.update({
+		"text.usetex": True,
+		"font.family": "serif",         # Computer Modern by default
+		"font.serif": ["Computer Modern Roman"],
+	})
+
+
+	# Example point
+	X, Y, Z = 4*np.sqrt(beta2), 0, 4*np.sqrt(1-beta2)
+	print(X,Z)
+	fig = plt.figure(figsize=(8, 6))
+	ax = fig.add_subplot(111, projection='3d')
+
+	# Plot the XY plane
+	xx, yy = np.meshgrid(range(-5, 6), range(-5, 6))
+	zz = np.zeros_like(xx)
+	ax.plot_surface(xx, yy, zz, alpha=0.3, color='blue')
+
+	# Draw the coordinate axes
+	ax.quiver(0, 0, 0, -5, 0, 0, color='k', arrow_length_ratio=0.1)
+	ax.quiver(0, 0, 0, 5, 0, 0, color='k', arrow_length_ratio=0.1)
+
+	ax.text(5.9, -0.5, 0, r"$\nabla_x$", fontsize=14, ha='center')
+	ax.quiver(0, 0, 0, 0, -5, 0, color='k', arrow_length_ratio=0.1)
+	ax.quiver(0, 0, 0, 0, 5, 0, color='k', arrow_length_ratio=0.1)
+
+	ax.text(0.5, 5.1, 0.0, r"$\nabla_y$", fontsize=14, ha='center')
+	ax.quiver(0, 0, 0, 0, 0, 5, color='k', arrow_length_ratio=0.1)
+	ax.quiver(0, 0, 0, 0, 0, -5, color='k', arrow_length_ratio=0.1)
+
+	ax.text(0, 0, 5.5, r"$||f_s|| \cdot sign(DC)$", fontsize=12, ha='center')
+
+	# Plot the point
+	ax.scatter(X, Y, Z, color='k', s=200)
+
+	# Dotted projection lines
+	ax.plot([X, X], [Y, Y], [0, Z], 'k:', linewidth=1.5)
+	ax.plot([0, X], [Y, Y], [Z, Z], 'k:', linewidth=1.5)
+
+	# Set limits and remove axes panes
+	ax.set_xlim(-5, 5)
+	ax.set_ylim(-5, 5)
+	ax.set_zlim(0, 5)
+	ax.set_xticks([])
+	ax.set_yticks([])
+	ax.set_zticks([])
+	ax.set_axis_off()
+
+	ax.set_box_aspect([1,1,0.5])  # makes axes proportionate
+
+
+	buf = BytesIO()
+	plt.savefig(buf, format="png", bbox_inches="tight", pad_inches=0, dpi=300, transparent=True)
+	buf.seek(0)
+	plt.close(fig)
+	# Load as PIL Image
+	img = Image.open(buf)
+	img_cropped = img.crop(img.getbbox())  # trim transparent borders
+
+	return(img_cropped)
