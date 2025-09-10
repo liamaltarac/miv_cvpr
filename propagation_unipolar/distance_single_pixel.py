@@ -52,13 +52,13 @@ plt.rcParams.update({'figure.dpi': '100'})
 
 #Params
 
-k = 3   # kernel size
+ks = [2,3,5]   # kernel size
 beta2s = [1, 0, 0.25] #[0, 0.25, 0.75, 1]  
 activations = [tf.nn.relu]
-timestamps =  100
+timestamps =  10
 experiment_name = "unipolar_circle"
 box_dims = [20, 16]
-step =  0.05 # Plot axis step
+step =  0.1 # Plot axis step
 
 
 
@@ -82,52 +82,74 @@ import matplotlib.patches as mpatches
 
 
 
-measured_beta = []
+measured_beta = {}
 
-for beta2 in np.arange(0, 1+step, step):
+for k in ks:
+    measured_beta[k] = []
+    for beta2 in np.arange(0, 1+step, step):
 
-    print(beta2)
+        print(beta2)
 
-    filters = np.zeros((3,3,1,1))
-    x = tf.cast(tf.repeat(tf.expand_dims([img], axis=-1) , repeats = filters.shape[-2], axis=-1), dtype=tf.float32) 
-
-
-    t = np.zeros((3,3))
-    t[1, 0] = np.sqrt(beta2)
-    t[0, 0] = np.sqrt(1-beta2)
-    filters = np.reshape(fft.idctn(t, norm='ortho'), (3,3,1,1)) 
-    #filters /= np.sum(np.abs(filters))
-    
-    w =tf.cast(filters, dtype=tf.float32)# tf.expand_dims(filters, -1), dtype=tf.float32)
-    w = tf.transpose(w, perm=(1,0,2,3))
+        filters = np.zeros((k,k,1,1))
+        x = tf.cast(tf.repeat(tf.expand_dims([img], axis=-1) , repeats = filters.shape[-2], axis=-1), dtype=tf.float32) 
 
 
-
-
-    for i in range(timestamps+1):
-        x = x/np.std(x)
-        vals = x[0, x.shape[1]//2, :, :]
-        vals = vals/np.sum(vals)
-
-        pos = np.expand_dims(np.linspace(-(x.shape[1]//2), x.shape[1]//2, x.shape[1]),-1)
-        mean = tf.reduce_sum(pos*vals)
-        var = tf.reduce_sum(((pos-mean)**2) * vals)
-        std = np.sqrt(var)
-        print(mean, np.sqrt(var), mid)
+        t = np.zeros((k,k))
         
+        t[1, 0] = np.sqrt(beta2)
+        t[0, 0] = np.sqrt(1-beta2)
+        filters = np.reshape(fft.idctn(t, norm='ortho'), (k,k,1,1)) 
+        #filters /= np.sum(np.abs(filters))
+        
+        if k==2:
+
+            filters = np.zeros((3,3,1,1))
+
+            t = np.zeros((k,k))
+            t[0,1] = np.sqrt(beta2)
+            t[0, 0] = np.sqrt(1-beta2)
 
 
-        x = tf.nn.relu( tf.nn.conv2d(x, w , strides=(1,1), 
-                                padding='SAME') )
-    v = (mean)/(i)
-    print(mean-mid, mean, mid , v, i)
-    measured_beta.append(v/1)
 
 
-fig = plt.figure()
-gs = fig.add_gridspec(1,1, wspace=0.04)
 
-ax = fig.add_subplot(gs[0])
-ax.plot( np.arange(0, 1+step, step), measured_beta)
+
+        for i in range(timestamps+1):
+            x = x/np.std(x)
+            vals = x[0, x.shape[1]//2, :, :]
+            vals = vals/np.sum(vals)
+
+            pos = np.expand_dims(np.linspace(-(x.shape[1]//2), x.shape[1]//2, x.shape[1]),-1)
+            mean = tf.reduce_sum(pos*vals)
+            var = tf.reduce_sum(((pos-mean)**2) * vals)
+            std = np.sqrt(var)
+            print(mean, np.sqrt(var), mid)
+            
+
+            if k==2:
+                w = np.zeros((3,3,1,1))
+
+                if i%2 == 0:
+                    filters[1:,0:2 ,0,0] = fft.idctn(t, norm="ortho")
+                else:
+                    filters[0:2,1: ,0,0] = fft.idctn(t, norm="ortho")
+
+
+            w =tf.cast(filters, dtype=tf.float32)# tf.expand_dims(filters, -1), dtype=tf.float32)
+            w = tf.transpose(w, perm=(1,0,2,3))
+
+
+            x = tf.nn.relu( tf.nn.conv2d(x, w , strides=(1,1), 
+                                    padding='SAME') )
+        v = (mean)/(i)
+        print(mean-mid, mean, mid , v, i)
+        measured_beta[k].append(v/1)
+
+
+    fig = plt.figure()
+    gs = fig.add_gridspec(1,1, wspace=0.04)
+
+    ax = fig.add_subplot(gs[0])
+    ax.plot( np.arange(0, 1+step, step), measured_beta)
 
 fig.savefig(f"distance1.png", format="png", dpi=fig.dpi, bbox_inches="tight")
