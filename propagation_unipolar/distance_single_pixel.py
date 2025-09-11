@@ -52,13 +52,15 @@ plt.rcParams.update({'figure.dpi': '100'})
 
 #Params
 
-ks = [2,3,5]   # kernel size
+ks = [2, 3, 5]   # kernel size
+
+cs = [0.5, 1, 2, 3]  #max speed
 beta2s = [1, 0, 0.25] #[0, 0.25, 0.75, 1]  
 activations = [tf.nn.relu]
-timestamps =  10
+timestamps =  50
 experiment_name = "unipolar_circle"
 box_dims = [20, 16]
-step =  0.1 # Plot axis step
+step =  0.01 # Plot axis step
 
 
 
@@ -66,29 +68,35 @@ step =  0.1 # Plot axis step
 
 # Single pixel input
 
-img = np.zeros((215,215)) # cv2.imread('input4.png', 0)/255. 
-mid = img.shape[0]//2
-img[mid, mid] = 1.
-print(img.shape)
-
-
-
-
-
-
 
 import matplotlib.patches as mpatches
 
+fig = plt.figure()
+gs = fig.add_gridspec(1,1, wspace=0.04)
+
+ax = fig.add_subplot(gs[0])
+
+
+ax.plot(np.arange(0, step+1, step),np.arange(0, step+1, step), label="Theoretical (Lorentz)")
+ax.set_xlabel(r"$\beta^2 = \frac{||f_a||^2 }{||f||^2}$")
+ax.set_ylabel(r"$\beta^2 = \frac{v^2}{c^2}$")
 
 
 
-measured_beta = {}
 
-for k in ks:
-    measured_beta[k] = []
+for i, k in enumerate(ks):
+    measured_beta = []
+    print("K :", k)
     for beta2 in np.arange(0, 1+step, step):
 
-        print(beta2)
+        print("BETA2", beta2)
+
+        img = np.zeros((215,215)) # cv2.imread('input4.png', 0)/255. 
+        mid = img.shape[0]//2
+        img[mid, mid] = 1.
+        print(img.shape)
+
+
 
         filters = np.zeros((k,k,1,1))
         x = tf.cast(tf.repeat(tf.expand_dims([img], axis=-1) , repeats = filters.shape[-2], axis=-1), dtype=tf.float32) 
@@ -96,7 +104,7 @@ for k in ks:
 
         t = np.zeros((k,k))
         
-        t[1, 0] = np.sqrt(beta2)
+        t[0, 1] = np.sqrt(beta2)
         t[0, 0] = np.sqrt(1-beta2)
         filters = np.reshape(fft.idctn(t, norm='ortho'), (k,k,1,1)) 
         #filters /= np.sum(np.abs(filters))
@@ -105,7 +113,7 @@ for k in ks:
 
             filters = np.zeros((3,3,1,1))
 
-            t = np.zeros((k,k))
+            t = np.zeros((2,2))
             t[0,1] = np.sqrt(beta2)
             t[0, 0] = np.sqrt(1-beta2)
 
@@ -114,7 +122,7 @@ for k in ks:
 
 
 
-        for i in range(timestamps+1):
+        for n in range(timestamps+1):
             x = x/np.std(x)
             vals = x[0, x.shape[1]//2, :, :]
             vals = vals/np.sum(vals)
@@ -127,29 +135,40 @@ for k in ks:
             
 
             if k==2:
-                w = np.zeros((3,3,1,1))
+                filters = np.zeros((3,3,1,1))
 
-                if i%2 == 0:
+                if n%2 == 0:
                     filters[1:,0:2 ,0,0] = fft.idctn(t, norm="ortho")
                 else:
                     filters[0:2,1: ,0,0] = fft.idctn(t, norm="ortho")
+                print(filters[:,:,0,0])
 
 
+
+
+            
+            #else:
+            #    w = tf.transpose(w, perm=(1,0,2,3))
+            
             w =tf.cast(filters, dtype=tf.float32)# tf.expand_dims(filters, -1), dtype=tf.float32)
-            w = tf.transpose(w, perm=(1,0,2,3))
 
 
             x = tf.nn.relu( tf.nn.conv2d(x, w , strides=(1,1), 
                                     padding='SAME') )
-        v = (mean)/(i)
-        print(mean-mid, mean, mid , v, i)
-        measured_beta[k].append(v/1)
+        v = (mean)/(n)
+        print( mean, mid , v, n, cs[i] , beta2)
+
+        measured_beta.append((v/cs[i])**2)
 
 
-    fig = plt.figure()
-    gs = fig.add_gridspec(1,1, wspace=0.04)
+    #ax.imshow(x[0,:,:,0])
 
-    ax = fig.add_subplot(gs[0])
-    ax.plot( np.arange(0, 1+step, step), measured_beta)
+    ax.plot(np.arange(0, step+1, step), measured_beta, label=str(k)+r"$\times$"+str(k) + r"$ \ (c = $" + str(cs[i]) + r"$)$")
+    #ax.set_xlabel(r"$\beta^2 = \frac{||f_a||^2 }{||f||^2}$")
+    #ax.set_ylabel(r"$\beta^2 = \frac{v^2}{c^2}$")
 
-fig.savefig(f"distance1.png", format="png", dpi=fig.dpi, bbox_inches="tight")
+
+
+plt.legend()
+
+fig.savefig(f"distance1.pdf", format="pdf", dpi=fig.dpi, bbox_inches="tight")
