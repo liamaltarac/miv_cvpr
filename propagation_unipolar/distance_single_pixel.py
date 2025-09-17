@@ -91,7 +91,7 @@ for i, k in enumerate(ks):
 
         print("BETA2", beta2)
 
-        img = np.zeros((215,215)) # cv2.imread('input4.png', 0)/255. 
+        img = np.zeros((301,301)) # cv2.imread('input4.png', 0)/255. 
         mid = img.shape[0]//2
         img[mid, mid] = 1.
         print(img.shape)
@@ -161,9 +161,10 @@ for i, k in enumerate(ks):
         measured_beta.append((v/cs[i])**2)
 
 
+
     #ax.imshow(x[0,:,:,0])
 
-    ax.plot(np.arange(0, step+1, step), measured_beta, label=str(k)+r"$\times$"+str(k) + r"$ \ (c = $" + str(cs[i]) + r"$)$")
+    ax.plot(np.arange(0, step+1, step), measured_beta, label=str(k)+r"$\times$"+str(k) + r"$ \ (c = \ $" + str(cs[i]) + r"$)$")
     #ax.set_xlabel(r"$\beta^2 = \frac{||f_a||^2 }{||f||^2}$")
     #ax.set_ylabel(r"$\beta^2 = \frac{v^2}{c^2}$")
 
@@ -171,4 +172,4 @@ for i, k in enumerate(ks):
 
 plt.legend()
 
-fig.savefig(f"distance1.pdf", format="pdf", dpi=fig.dpi, bbox_inches="tight")
+fig.savefig(f"distance_propagation.pdf", format="pdf", dpi=fig.dpi, bbox_inches="tight")
