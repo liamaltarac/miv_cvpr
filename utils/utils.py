@@ -219,7 +219,7 @@ def idct2(a):
 
 
 
-def plot_filter_x(beta2):
+def plot_filter_x(beta2, ax=None):
 
 	plt.rcParams.update({
 		"text.usetex": True,
@@ -228,11 +228,14 @@ def plot_filter_x(beta2):
 	})
 
 
+
 	# Example point
 	X, Y, Z = 4*np.sqrt(beta2), 0, 4*np.sqrt(1-beta2)
 	print(X,Z)
-	fig = plt.figure(figsize=(8, 6))
-	ax = fig.add_subplot(111, projection='3d')
+
+	if ax is None:
+		fig = plt.figure(figsize=(8, 6))
+		ax = fig.add_subplot(111, projection='3d')
 
 	# Plot the XY plane
 	xx, yy = np.meshgrid(range(-5, 6), range(-5, 6))
@@ -272,12 +275,12 @@ def plot_filter_x(beta2):
 	ax.set_box_aspect([1,1,0.5])  # makes axes proportionate
 
 
-	buf = BytesIO()
+	'''buf = BytesIO()
 	plt.savefig(buf, format="png", bbox_inches="tight", pad_inches=0, dpi=300, transparent=True)
 	buf.seek(0)
 	plt.close(fig)
 	# Load as PIL Image
 	img = Image.open(buf)
-	img_cropped = img.crop(img.getbbox())  # trim transparent borders
+	img_cropped = img.crop(img.getbbox())  # trim transparent borders'''
 
-	return(img_cropped)
+	return   ax #(img_cropped)
