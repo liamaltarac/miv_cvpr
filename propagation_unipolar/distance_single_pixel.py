@@ -79,7 +79,7 @@ ax = fig.add_subplot(gs[0])
 
 ax.plot(np.arange(0, step+1, step),np.arange(0, step+1, step), label="Theoretical (Lorentz)")
 ax.set_xlabel(r"$\beta^2 = \frac{||f_a||^2 }{||f||^2}$")
-ax.set_ylabel(r"$\beta^2 = \frac{v^2}{c^2}$")
+ax.set_ylabel(r"$\beta^2 = \frac{v^2}{c^2} = (\frac{dx}{dx_{max})^2}$")
 
 
 

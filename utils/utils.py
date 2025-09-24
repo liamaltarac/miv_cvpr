@@ -219,7 +219,7 @@ def idct2(a):
 
 
 
-def plot_filter_x(beta2, ax=None):
+def plot_filter_x(beta2 , ax=None):
 
 	plt.rcParams.update({
 		"text.usetex": True,
@@ -228,14 +228,16 @@ def plot_filter_x(beta2, ax=None):
 	})
 
 
-
 	# Example point
 	X, Y, Z = 4*np.sqrt(beta2), 0, 4*np.sqrt(1-beta2)
 	print(X,Z)
-
 	if ax is None:
+	
+
 		fig = plt.figure(figsize=(8, 6))
 		ax = fig.add_subplot(111, projection='3d')
+
+	
 
 	# Plot the XY plane
 	xx, yy = np.meshgrid(range(-5, 6), range(-5, 6))
@@ -254,7 +256,7 @@ def plot_filter_x(beta2, ax=None):
 	ax.quiver(0, 0, 0, 0, 0, 5, color='k', arrow_length_ratio=0.1)
 	ax.quiver(0, 0, 0, 0, 0, -5, color='k', arrow_length_ratio=0.1)
 
-	ax.text(0, 0, 5.5, r"$||f_s|| \cdot sign(DC)$", fontsize=12, ha='center')
+	ax.text(0, 0, 5.5, r"$||f_s|| \cdot sign(\Sigma)$", fontsize=12, ha='center')
 
 	# Plot the point
 	ax.scatter(X, Y, Z, color='k', s=200)
@@ -273,14 +275,16 @@ def plot_filter_x(beta2, ax=None):
 	ax.set_axis_off()
 
 	ax.set_box_aspect([1,1,0.5])  # makes axes proportionate
-
+	plt.subplots_adjust(left=0, right=1, top=1, bottom=0)  # remove margins
+	plt.margins(0, 0, 0)             # no extra margins
 
 	'''buf = BytesIO()
-	plt.savefig(buf, format="png", bbox_inches="tight", pad_inches=0, dpi=300, transparent=True)
+	plt.savefig(buf, format="png", bbox_inches="tight", pad_inches=0, dpi=fig.dpi, transparent=True)
+
 	buf.seek(0)
 	plt.close(fig)
 	# Load as PIL Image
 	img = Image.open(buf)
-	img_cropped = img.crop(img.getbbox())  # trim transparent borders'''
+	img_cropped = img.crop(img.getbbox())  # trim transparent borders
 
-	return   ax #(img_cropped)
+	return(img_cropped)'''
