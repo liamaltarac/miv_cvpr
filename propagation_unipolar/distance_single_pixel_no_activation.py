@@ -128,8 +128,8 @@ for i, k in enumerate(ks):
             vals = vals/np.sum(vals)
 
             pos = np.expand_dims(np.linspace(-(x.shape[1]//2), x.shape[1]//2, x.shape[1]),-1)
-            mean = tf.reduce_sum(pos*vals)
-            var = tf.reduce_sum(((pos-mean)**2) * vals)
+            mean = tf.reduce_sum(pos*(vals**2))
+            var = tf.reduce_sum(((pos-mean)**2) * (vals**2))
             std = np.sqrt(var)
             print(mean, np.sqrt(var), mid)
             
@@ -153,8 +153,8 @@ for i, k in enumerate(ks):
             w =tf.cast(filters, dtype=tf.float32)# tf.expand_dims(filters, -1), dtype=tf.float32)
 
 
-            x = tf.nn.relu( tf.nn.conv2d(x, w , strides=(1,1), 
-                                    padding='SAME') )
+            x = tf.nn.conv2d(x, w , strides=(1,1), 
+                                    padding='SAME') 
         v = (mean)/(n)
         print( mean, mid , v, n, cs[i] , beta2)
 
@@ -172,4 +172,4 @@ for i, k in enumerate(ks):
 
 plt.legend()
 
-fig.savefig(f"distance_propagation.pdf", format="pdf", dpi=fig.dpi, bbox_inches="tight")
+fig.savefig(f"distance_propagation_no_activation.pdf", format="pdf", dpi=fig.dpi, bbox_inches="tight")
