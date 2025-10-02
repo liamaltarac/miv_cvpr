@@ -57,7 +57,7 @@ ks = [2, 3, 5]   # kernel size
 cs = [0.5, 1, 2, 3]  #max speed
 beta2s = [1, 0, 0.25] #[0, 0.25, 0.75, 1]  
 activations = [tf.nn.relu]
-timestamps =  50
+timestamps =  10
 experiment_name = "unipolar_circle"
 box_dims = [20, 16]
 step =  0.01 # Plot axis step
@@ -75,13 +75,20 @@ fig = plt.figure()
 gs = fig.add_gridspec(1,1, wspace=0.04)
 
 ax = fig.add_subplot(gs[0])
+colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+print( plt.rcParams['axes.prop_cycle'])
+ls = plt.rcParams['axes.prop_cycle'].by_key()['linestyle']
 
+ax.set_prop_cycle(color=colors[1:])
+from cycler import cycler
+linestyle_cycler = cycler('linestyle', ls[1:])
+color_cycler = cycler('color', colors[1:])
 
-ax.plot(np.arange(0, step+1, step),np.arange(0, step+1, step), label="Theoretical (Lorentz)")
+ax.set_prop_cycle(color_cycler + linestyle_cycler)
+
+#line1 = ax.plot(np.arange(0, step+1, step),np.arange(0, step+1, step), label="Theoretical (Lorentz)")
 ax.set_xlabel(r"$\beta^2 = \frac{||f_a||^2 }{||f||^2}$")
 ax.set_ylabel(r"$( \frac{dx}{dx_{max}})^2$")
-
-
 
 
 for i, k in enumerate(ks):
@@ -124,12 +131,12 @@ for i, k in enumerate(ks):
 
         for n in range(timestamps+1):
             x = x/np.std(x)
-            vals = x[0, x.shape[1]//2, :, :]
+            vals = x[0, x.shape[1]//2, :, :]**2
             vals = vals/np.sum(vals)
 
             pos = np.expand_dims(np.linspace(-(x.shape[1]//2), x.shape[1]//2, x.shape[1]),-1)
-            mean = tf.reduce_sum(pos*(vals**2))
-            var = tf.reduce_sum(((pos-mean)**2) * (vals**2))
+            mean = tf.reduce_sum(pos*(vals))
+            var = tf.reduce_sum(((pos-mean)**2) * (vals))
             std = np.sqrt(var)
             print(mean, np.sqrt(var), mid)
             
