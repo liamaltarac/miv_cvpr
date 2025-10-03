@@ -248,15 +248,15 @@ def plot_filter_x(beta2 , ax=None):
 	ax.quiver(0, 0, 0, -5, 0, 0, color='k', arrow_length_ratio=0.1)
 	ax.quiver(0, 0, 0, 5, 0, 0, color='k', arrow_length_ratio=0.1)
 
-	ax.text(5.9, -0.5, 0, r"$\nabla_x$", fontsize=14, ha='center')
+	ax.text(5.9, -0.5, 0, r"$\nabla_x$", fontsize=18, ha='center')
 	ax.quiver(0, 0, 0, 0, -5, 0, color='k', arrow_length_ratio=0.1)
 	ax.quiver(0, 0, 0, 0, 5, 0, color='k', arrow_length_ratio=0.1)
 
-	ax.text(0.5, 5.1, 0.0, r"$\nabla_y$", fontsize=14, ha='center')
+	ax.text(0.5, 5.1, 0.0, r"$\nabla_y$", fontsize=18, ha='center')
 	ax.quiver(0, 0, 0, 0, 0, 5, color='k', arrow_length_ratio=0.1)
 	ax.quiver(0, 0, 0, 0, 0, -5, color='k', arrow_length_ratio=0.1)
 
-	ax.text(0, 0, 5.5, r"$||f_s|| \cdot sign(\Sigma)$", fontsize=12, ha='center')
+	ax.text(0, 0, 5.5, r"$||f_s|| \cdot sign(\Sigma)$", fontsize=16, ha='center')
 
 	# Plot the point
 	ax.scatter(X, Y, Z, color='k', s=200)
