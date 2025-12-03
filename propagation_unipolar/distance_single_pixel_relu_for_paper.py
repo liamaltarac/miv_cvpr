@@ -78,8 +78,8 @@ ax = fig.add_subplot(gs[0])
 
 
 ax.plot(np.arange(0, step+1, step),np.arange(0, step+1, step), label="Theoretical (Lorentz)")
-ax.set_xlabel(r"$\beta^2 = \frac{||f_a||^2 }{||f||^2}$")
-ax.set_ylabel(r"$( \frac{dx}{dx_{max}})^2$")
+ax.set_xlabel(r"$\beta^2 = \frac{||f_o||^2 }{||f||^2}$" , fontsize=12)
+ax.set_ylabel(r"$( \frac{dx}{dx_{max}})^2$" , fontsize=12)
 
 
 

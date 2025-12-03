@@ -80,8 +80,8 @@ ax = fig.add_subplot(gs[0])
 
 
 line1 = ax.plot(np.arange(0, step+1, step),np.arange(0, step+1, step), label="Theoretical (Lorentz)")
-ax.set_xlabel(r"$\beta^2 = \frac{||f_a||^2 }{||f||^2}$")
-ax.set_ylabel(r"$( \frac{dx}{dx_{max}})^2$")
+ax.set_xlabel(r"$\beta^2 = \frac{||f_o||^2 }{||f||^2}$", fontsize=12)
+ax.set_ylabel(r"$( \frac{dx}{dx_{max}})^2$", fontsize=12)
 
 
 for i, k in enumerate(ks):
@@ -124,7 +124,7 @@ for i, k in enumerate(ks):
 
         for n in range(timestamps+1):
             x = x/np.std(x)
-            vals = x[0, x.shape[1]//2, :, :]**2
+            vals = np.abs(x[0, x.shape[1]//2, :, :])
             vals = vals/np.sum(vals)
 
             pos = np.expand_dims(np.linspace(-(x.shape[1]//2), x.shape[1]//2, x.shape[1]),-1)
